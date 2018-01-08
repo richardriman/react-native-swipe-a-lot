@@ -1,4 +1,4 @@
-export default const reducer = (state = {}, action) => {
+export default reducer = (state = {}, action) => {
   const newState = Object.assign({}, state)
 
   switch (action.type) {
