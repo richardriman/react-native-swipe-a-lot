@@ -7,7 +7,7 @@ import ReactNative, {
   View,
   ViewPagerAndroid
 } from 'react-native'
-import {PropTypes} from 'prop-types'
+import { PropTypes } from 'prop-types'
 
 import Circles from './Circles'
 import FixedSizeView from './FixedSizeView'
@@ -34,7 +34,7 @@ export default class SwipeALot extends Component {
     return Object.assign({
       enabled: false,
       disableOnSwipe: false,
-      delayBetweenAutoSwipes: 5000
+      delayBetweenAutoSwipes: 5000,
     }, this.props.autoplay)
   }
 
@@ -45,7 +45,6 @@ export default class SwipeALot extends Component {
   }
 
   componentDidMount() {
-
     this.store.dispatch({
       type: 'SET_ACTIVE_PAGE',
       page: 0
@@ -68,6 +67,7 @@ export default class SwipeALot extends Component {
       }
 
       this.onSetActivePage(page)
+
       if (this.getAutoplaySettings().disableOnSwipe &&
         this.autoplayPageCurrentlyBeingTransitionedTo !== page) {
         this.stopAutoplay()
@@ -91,8 +91,11 @@ export default class SwipeALot extends Component {
     this.autoplayInterval = setInterval(() => {
       let { page } = this.store.getState()
       const numOfPages = this.props.children.length || 1
+
       page++
+
       if (page >= numOfPages) page = 0
+
       this.swipeToPage(page)
       this.autoplayPageCurrentlyBeingTransitionedTo = page
     }, this.getAutoplaySettings().delayBetweenAutoSwipes)
@@ -106,6 +109,7 @@ export default class SwipeALot extends Component {
 
   getPage() {
     let { page } = this.store.getState()
+
     return page
   }
 
@@ -128,35 +132,32 @@ export default class SwipeALot extends Component {
 
   render() {
     return (
-      <View style={[this.props.wrapperStyle, {flex: 1}]} onLayout={() => {
-          const page = this.getPage()
-          this.swipeToPage(page)
-        }}>
+      <View style={[this.props.wrapperStyle, { flex: 1 }]} onLayout={() => this.swipeToPage(this.getPage())}>
         {(() => {
           if (Platform.OS === 'ios') {
             return (
               <ScrollView
-                ref={(c) => this.swiper = c}
-                pagingEnabled={true}
-                horizontal={true}
-                bounces={false}
-                removeClippedSubviews={true}
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                onMomentumScrollEnd={(e) => {
-                  const { width } = this.store.getState()
-                  const page = e.nativeEvent.contentOffset.x / width
-                  this.swipeToPage(page)
-                }}
-                onLayout={(event) => {
-                  const {x, y, width, height} = event.nativeEvent.layout
-                  this.store.dispatch({
-                    type: 'SET_DIMS',
-                    width,
-                    height
-                  })
-                }}
-                automaticallyAdjustContentInsets={false}>
+                  ref={(c) => this.swiper = c}
+                  pagingEnabled={true}
+                  horizontal={true}
+                  bounces={false}
+                  removeClippedSubviews={true}
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
+                  onMomentumScrollEnd={(e) => {
+                    const { width } = this.store.getState()
+                    const page = e.nativeEvent.contentOffset.x / width
+                    this.swipeToPage(page)
+                  }}
+                  onLayout={(event) => {
+                    const { x, y, width, height } = event.nativeEvent.layout
+                    this.store.dispatch({
+                      type: 'SET_DIMS',
+                      width,
+                      height
+                    })
+                  }}
+                  automaticallyAdjustContentInsets={false}>
                 {React.Children.map(this.props.children, (c, i) => {
                   return <FixedSizeView store={this.store} key={`view${i}`}>{c}</FixedSizeView>
                 })}
@@ -166,17 +167,15 @@ export default class SwipeALot extends Component {
           else if (Platform.OS === 'android') {
             return (
               <ViewPagerAndroid
-                ref={(c) => this.swiper = c}
-                initialPage={0}
-                onPageSelected={(e) => {
-                  this.swipeToPage(e.nativeEvent.position)
-                }}
-                style={{
-                  flex: 1
-                }}>
-                {React.Children.map(this.props.children, (c) => {
-                  return <View>{c}</View>
-                })}
+                  ref={(c) => this.swiper = c}
+                  initialPage={0}
+                  onPageSelected={(e) => {
+                    this.swipeToPage(e.nativeEvent.position)
+                  }}
+                  style={{
+                    flex: 1
+                  }}>
+                {React.Children.map(this.props.children, (c) => <View>{c}</View>)}
               </ViewPagerAndroid>
             )
           }
